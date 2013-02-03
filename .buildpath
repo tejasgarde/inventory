@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<buildpath>
+	<buildpathentry external="true" kind="lib" path="C:/Documents%20and%20Settings/staksande/.m2/repository/org/primefaces/extensions/primefaces-extensions/0.5.1/primefaces-extensions-0.5.1.jar"/>
+	<buildpathentry external="true" kind="lib" path="C:/Documents%20and%20Settings/staksande/.m2/repository/org/omnifaces/omnifaces/1.2/omnifaces-1.2.jar"/>
+	<buildpathentry external="true" kind="lib" path="C:/Documents%20and%20Settings/staksande/.m2/repository/com/sun/faces/jsf-impl/2.1.11/jsf-impl-2.1.11.jar"/>
+	<buildpathentry external="true" kind="lib" path="C:/Documents%20and%20Settings/staksande/.m2/repository/org/primefaces/primefaces/3.4.1/primefaces-3.4.1.jar"/>
+</buildpath>

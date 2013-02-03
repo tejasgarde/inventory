@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:faces="http://www.springframework.org/schema/faces"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/faces http://www.springframework.org/schema/faces/spring-faces-3.1.xsd
+		http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.1.xsd">
+
+
+	<!-- Activates annotation-based bean configuration -->
+	<context:annotation-config />
+	<!-- needed is for @Configurable -->
+	
+	<context:component-scan base-package="com.chanda.inventory" />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<!-- <tx:annotation-driven /> -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="com.ebix.string.domain" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</prop>
+				<prop key="hibernate.max_fetch_depth">3</prop>
+				<prop key="hibernate.jdbc.fetch_size">50</prop>
+				<prop key="hibernate.jdbc.batch_size">10</prop>
+				<prop key="hibernate.show_sql">true</prop>
+			</props>
+		</property>
+	</bean>
+        
+	<!-- Data Source Declaration -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/ezstr" />
+		<property name="user" value="root" />
+		<property name="password" value="ecpdemo1" />
+		<property name="maxPoolSize" value="10" />
+		<property name="maxStatements" value="0" />
+		<property name="minPoolSize" value="5" />
+	</bean>
+	<bean class="org.springframework.security.access.vote.UnanimousBased"
+		id="unanimousBased">
+		<property name="decisionVoters">
+			<list>
+				<ref bean="roleVoter" />
+				<ref bean="authenticatedVoter" />
+				<ref bean="WebExpressionVoter" />
+			</list>
+		</property>
+	</bean>
+	<bean class="org.springframework.security.access.vote.RoleVoter"
+		id="roleVoter" />
+	<bean class="org.springframework.security.access.vote.AuthenticatedVoter"
+		id="authenticatedVoter" />
+	<bean class="org.springframework.security.web.access.expression.WebExpressionVoter"
+		id="WebExpressionVoter" />
+
+	<sec:http use-expressions="true" auto-config="true"
+		access-denied-page="/faces/accessDenied.xhtml"
+		access-decision-manager-ref="unanimousBased">
+		<sec:form-login login-page="/faces/index.xhtml"
+			login-processing-url="/j_spring_security_check"
+			authentication-failure-url="/faces/index.xhtml?error=1" />
+		<sec:intercept-url pattern="/faces/pages/admin/**"
+			access="hasRole('role_admin')" />
+		<sec:intercept-url pattern="/faces/pages/**" access="authenticated" />
+		<sec:logout logout-success-url="/faces/index.xhtml?error=2"
+			logout-url="/logout*" invalidate-session="true" />
+	</sec:http>
+
+	<!-- business logic (method) security -->
+
+	<sec:global-method-security
+		secured-annotations="enabled" pre-post-annotations="enabled"
+		jsr250-annotations="enabled">
+	</sec:global-method-security>
+
+	<!-- manager responsible for loading user account with assigned roles -->
+	<sec:authentication-manager alias="authenticationManager">
+		<sec:authentication-provider
+			user-service-ref="userDetailsService">
+			<!-- <sec:password-encoder hash="sha-256"> <sec:salt-source user-property="username"/> 
+				</sec:password-encoder> -->
+		</sec:authentication-provider>
+	</sec:authentication-manager>
+
+
+	<bean id="loggerListener"
+		class="org.springframework.security.authentication.event.LoggerListener" />
+</beans>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+</h:head>
+<h:body>
+	<ui:composition template="/templates/defaultLayout.xhtml">
+		<ui:define name="windowTitle">
+           #{str.loginHeader}
+         </ui:define>
+
+		<ui:define name="heading">
+			<ui:include src="/login/header.xhtml" />
+		</ui:define>
+
+		<ui:define name="sidebarLeft">
+			<ui:include src="/login/sidebarLeft.xhtml" />
+		</ui:define>
+
+		<ui:define name="content">
+		<p:messages id="errors" showDetail="true"/>
+			<h:form prependId="false">
+			<p:focus context="loginGrid"/>
+				<p:panelGrid columns="2" id="loginGrid">
+					<f:facet name="header">
+						<h3>#{str.loginHeader}</h3>
+					</f:facet>
+					<p:outputLabel for="j_username" value="#{str.userName}" />
+					<p:inputText id="j_username" required="true" requiredMessage="User Name Needed" value="#{userBean.loginName}"/>
+					<p:outputLabel for="j_password" value="#{str.password}" />
+					<p:password id="j_password" required="true" requiredMessage="Password Needed" value="#{userBean.password}"/>
+					<f:facet name="footer">
+						<p:commandButton id="loginBtn" value="#{str.signIn}" action="#{userBean.login()}" update=":errors"/>
+						<p:commandButton value="Reset" type="reset" />
+					</f:facet>
+				</p:panelGrid>
+				<h3>
+					<h:outputText id="out" value="Invalid Login Information...." rendered="#{param['error'] == 1}"/>
+				</h3>
+				
+				<p:blockUI block="loginGrid" trigger="loginBtn">
+		            <h:panelGrid id="blockContent" columns="2">
+		                <h:outputText value="Please wait, Signing-in in progress...."
+		                              style="white-space:nowrap;"/>
+		            </h:panelGrid>
+       	 		</p:blockUI>
+			</h:form>
+		</ui:define>
+	</ui:composition>
+</h:body>
+</html>
